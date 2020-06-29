@@ -4,6 +4,7 @@ import com.patricioveratapia.myweather.weather.data.database.WeatherDao
 import com.patricioveratapia.myweather.weather.data.mapper.WeatherDatabaseMapper
 import com.patricioveratapia.myweather.weather.data.mapper.WeatherMapper
 import com.patricioveratapia.myweather.weather.data.network.RetrofitService
+import com.patricioveratapia.myweather.weather.ui.interfaces.WeatherRepository
 import com.patricioveratapia.myweather.weather.ui.model.CurrentWeatherUIModel
 import com.patricioveratapia.myweather.weather.ui.model.DailyForecastWeatherUIModel
 import com.patricioveratapia.myweather.weather.util.State
@@ -12,10 +13,10 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onStart
 
 class WeatherRepositoryImpl(
-        private val service: RetrofitService,
-        private val mapper: WeatherMapper,
-        private val databaseMapper: WeatherDatabaseMapper,
-        private val weatherDao: WeatherDao
+    private val service: RetrofitService,
+    private val mapper: WeatherMapper,
+    private val databaseMapper: WeatherDatabaseMapper,
+    private val weatherDao: WeatherDao
 ) : WeatherRepository {
 
 
@@ -38,21 +39,21 @@ class WeatherRepositoryImpl(
                     weatherDao.saveCurrentWeather(databaseModel)
 
                     emit(
-                            State.Success(
-                                    databaseMapper.mapCurrentWeather(databaseModel)
+                        State.Success(
+                            databaseMapper.mapCurrentWeather(databaseModel)
 
-                            )
+                        )
                     )
                 }
 
                 is State.Error -> emit(
-                        State.Error<CurrentWeatherUIModel>(
-                                databaseMapper.mapCurrentWeather(
-                                        weatherDao.getCurrentWeather(
-                                                city
-                                        )
-                                )
+                    State.Error<CurrentWeatherUIModel>(
+                        databaseMapper?.mapCurrentWeather(
+                            weatherDao.getCurrentWeather(
+                                city
+                            )
                         )
+                    )
                 )
 
                 is State.Loading -> {
@@ -79,21 +80,60 @@ class WeatherRepositoryImpl(
                     weatherDao.saveForecastWeather(databaseModel)
 
                     emit(
-                            State.Success(
-                                    databaseMapper.mapForecastWeather(weatherDao.getForecastWeather(city))
+                        State.Success(
+                            databaseMapper.mapForecastWeather(weatherDao.getForecastWeather(city))
 
-                            )
+                        )
                     )
                 }
 
                 is State.Error -> emit(
-                        State.Error<List<DailyForecastWeatherUIModel>>(
-                                databaseMapper.mapForecastWeather(
-                                        weatherDao.getForecastWeather(
-                                                city
-                                        )
-                                )
+                    State.Error<List<DailyForecastWeatherUIModel>>(
+                        databaseMapper.mapForecastWeather(
+                            weatherDao.getForecastWeather(
+                                city
+                            )
                         )
+                    )
+                )
+
+                is State.Loading -> {
+                }
+            }
+
+        }.onStart { emit(State.Loading()) }
+    }
+
+    override fun refreshWeather(city: String): Flow<State<CurrentWeatherUIModel>> {
+
+        return flow {
+
+            when (val weatherState = service.getCurrentWeather(city)) {
+
+                is State.Success -> {
+
+                    val databaseModel = mapper.mapCurrentWeather(weatherState.data)
+
+                    weatherDao.deleteCurrentWeather(city)
+
+                    weatherDao.saveCurrentWeather(databaseModel)
+
+                    emit(
+                        State.Success(
+                            databaseMapper.mapCurrentWeather(databaseModel)
+
+                        )
+                    )
+                }
+
+                is State.Error -> emit(
+                    State.Error<CurrentWeatherUIModel>(
+                        databaseMapper.mapCurrentWeather(
+                            weatherDao.getCurrentWeather(
+                                city
+                            )
+                        )
+                    )
                 )
 
                 is State.Loading -> {

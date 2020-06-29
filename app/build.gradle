@@ -85,5 +85,17 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.google.android.material:material:1.1.0'
 
+    // test
+    def mockitokotlin_version = "2.2.0"
+    def junit_version = "4.12"
+    testImplementation "org.koin:koin-test:$koin_version"
+    testImplementation "junit:junit:$junit_version"
+    testImplementation "androidx.room:room-testing:$room_version"
+    testImplementation 'com.android.support.test:runner:1.0.2'
+    testImplementation 'androidx.test:core:1.2.0'
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:$mockitokotlin_version"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
 
 }

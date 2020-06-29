@@ -40,9 +40,11 @@ class CurrentWeatherView : FrameLayout {
         initView(context)
     }
 
-    constructor(context: Context,
-                attrs: AttributeSet?,
-                @AttrRes defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
+    constructor(
+        context: Context,
+        attrs: AttributeSet?,
+        @AttrRes defStyleAttr: Int
+    ) : super(context, attrs, defStyleAttr) {
 
         initView(context)
     }
@@ -79,7 +81,12 @@ class CurrentWeatherView : FrameLayout {
 
             is State.Loading -> viewLoadingState.visibility = View.VISIBLE
 
-            is State.Error -> onErrorListener?.invoke()
+            is State.Error -> {
+
+                onErrorListener?.invoke()
+
+                setData(state.data)
+            }
 
             is State.Success -> {
 
@@ -116,6 +123,8 @@ class CurrentWeatherView : FrameLayout {
                 cardViewContainer.setCardBackgroundColor(resources.getColor(R.color.colorPrimaryDark, null))
 
             }
+
+            viewContentState.visibility = View.VISIBLE
 
         }
     }

@@ -1,7 +1,7 @@
 package com.patricioveratapia.myweather.weather
 
 import android.app.Application
-import com.patricioveratapia.gltest.computers.di.myModule
+import com.patricioveratapia.myweather.weather.di.myModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin

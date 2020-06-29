@@ -21,25 +21,25 @@ class RetrofitService {
     }
 
     private val okHttpClient = OkHttpClient.Builder()
-            .addNetworkInterceptor(interceptor) // same for .addInterceptor(...)
-            .connectTimeout(30, TimeUnit.SECONDS) //Backend is really slow
-            .writeTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
+        .addNetworkInterceptor(interceptor) // same for .addInterceptor(...)
+        .connectTimeout(30, TimeUnit.SECONDS) //Backend is really slow
+        .writeTimeout(30, TimeUnit.SECONDS)
+        .readTimeout(30, TimeUnit.SECONDS)
+        .build()
 
-    val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .client(okHttpClient)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
 
     fun getCurrentWeather(city: String): State<CurrentWeatherResponse?> {
 
         return try {
             val result = retrofit
-                    .create(WeatherApi::class.java)
-                    .getCurrentWeather(city, API_KEY, "metric", Locale.getDefault().language)
-                    .execute()
+                .create(WeatherApi::class.java)
+                .getCurrentWeather(city, API_KEY, "metric", Locale.getDefault().language)
+                .execute()
 
             State.Success(result.body())
         } catch (e: Exception) {
@@ -52,9 +52,9 @@ class RetrofitService {
 
         return try {
             val result = retrofit
-                    .create(WeatherApi::class.java)
-                    .getForecastWeather(city, API_KEY, "metric", Locale.getDefault().language)
-                    .execute()
+                .create(WeatherApi::class.java)
+                .getForecastWeather(city, API_KEY, "metric", Locale.getDefault().language)
+                .execute()
 
             State.Success(result.body())
         } catch (e: Exception) {

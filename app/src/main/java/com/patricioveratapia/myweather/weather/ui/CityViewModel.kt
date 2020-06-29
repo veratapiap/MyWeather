@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.patricioveratapia.myweather.weather.data.CityRepository
+import com.patricioveratapia.myweather.weather.ui.interfaces.CityRepository
 import com.patricioveratapia.myweather.weather.util.State
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
@@ -22,7 +22,7 @@ class CityViewModel(private val repository: CityRepository) : ViewModel() {
 
     }
 
-    fun getCities() {
+    private fun getCities() {
 
         viewModelScope.launch(Dispatchers.IO) {
 

@@ -13,15 +13,15 @@ class WeatherMapper {
         return input?.let {
 
             CurrentWeatherDbModel(
-                    city = it.name,
-                    main = it.weather[0].main,
-                    description = it.weather[0].description,
-                    temperature = it.main.temp,
-                    imageCode = it.weather[0].icon,
-                    sunrise = it.sys.sunrise,
-                    sunset = it.sys.sunset,
-                    date = it.dt,
-                    timeZone = it.timezone
+                city = it.name,
+                main = it.weather[0].main,
+                description = it.weather[0].description,
+                temperature = it.main.temp,
+                imageCode = it.weather[0].icon,
+                sunrise = it.sys.sunrise,
+                sunset = it.sys.sunset,
+                date = it.dt,
+                timeZone = it.timezone
             )
         } ?: CurrentWeatherDbModel()
 
@@ -32,23 +32,17 @@ class WeatherMapper {
         return input?.let {
 
             ForecastWeatherDbModel(
-                    city = it.city.name,
-                    dailyWeather = it.list.map { dailyWeather ->
-                        DailyForecastWeatherDbModel(
-                                day = dailyWeather.dt,
-                                maxTemperature = dailyWeather.main.temp_max.toInt(),
-                                minTemperature = dailyWeather.main.temp_min.toInt(),
-                                imageCode = dailyWeather.weather[0].icon
-                        )
-                    }
+                city = it.city.name,
+                dailyWeather = it.list.map { dailyWeather ->
+                    DailyForecastWeatherDbModel(
+                        day = dailyWeather.dt,
+                        maxTemperature = dailyWeather.main.temp_max.toInt(),
+                        minTemperature = dailyWeather.main.temp_min.toInt(),
+                        imageCode = dailyWeather.weather[0].icon
+                    )
+                }
             )
         } ?: ForecastWeatherDbModel()
 
     }
-
-/*    fun mapList(input: List<ComputersResponseItem>?): List<ComputerDbModel> {
-
-        return input?.let { it.mapCurrentWeather { mapCurrentWeather(it) } } ?: emptyList()
-
-    }*/
 }

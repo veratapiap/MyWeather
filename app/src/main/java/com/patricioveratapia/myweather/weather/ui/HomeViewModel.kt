@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.patricioveratapia.myweather.weather.data.WeatherRepository
+import com.patricioveratapia.myweather.weather.ui.interfaces.WeatherRepository
 import com.patricioveratapia.myweather.weather.ui.model.CurrentWeatherUIModel
 import com.patricioveratapia.myweather.weather.ui.model.DailyForecastWeatherUIModel
 import com.patricioveratapia.myweather.weather.util.State
@@ -12,9 +12,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
-class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
-
-    private var city: String = "Tandil"
+class HomeViewModel(private val repository: WeatherRepository, var location: String) : ViewModel() {
 
     private val _currentWeather = MutableLiveData<State<CurrentWeatherUIModel>>()
 
@@ -24,6 +22,8 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
 
     val forecastWeather: LiveData<State<List<DailyForecastWeatherUIModel>>> = _forecastWeather
 
+    private var currentCity = location
+
     init {
 
         getCurrentWeather()
@@ -31,12 +31,11 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
         getForeCastWeather()
     }
 
-
     fun getCurrentWeather() {
 
         viewModelScope.launch(IO) {
 
-            repository.getCurrentWeather(city).collect {
+            repository.getCurrentWeather(currentCity).collect {
 
                 _currentWeather.postValue(it)
             }
@@ -47,15 +46,17 @@ class HomeViewModel(private val repository: WeatherRepository) : ViewModel() {
 
         viewModelScope.launch(IO) {
 
-            repository.getForecastWeather(city).collect {
+            repository.getForecastWeather(currentCity).collect {
 
                 _forecastWeather.postValue(it)
             }
         }
     }
 
-    fun setCity(city: String) {
-        this.city = city
+    fun setCurrentCity(city: String) {
+
+        currentCity = city
     }
+
 }
 

@@ -15,7 +15,7 @@ interface WeatherDao {
     fun getCurrentWeather(city: String): CurrentWeatherDbModel
 
     @Query("SELECT * from forecast_weather where city=:city")
-    fun getForecastWeather(city: String): ForecastWeatherDbModel
+    fun getForecastWeather(city: String): ForecastWeatherDbModel?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveCurrentWeather(currentWeather: CurrentWeatherDbModel)

@@ -12,29 +12,42 @@ import com.patricioveratapia.myweather.weather.ui.model.DailyForecastWeatherUIMo
 import com.patricioveratapia.myweather.weather.util.State
 import kotlinx.android.synthetic.main.fragment_home.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 
 class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogListener {
 
-
-    private val homeViewModel: HomeViewModel by viewModel()
+    private val homeViewModel: HomeViewModel by viewModel { parametersOf(currentCity) }
 
     private val currentWeatherView by lazy { fragment_home_current_weather_view }
 
-    val recyclerView by lazy { fragment_home_forecast_weather_recycler_view }
+    private val recyclerView by lazy { fragment_home_forecast_weather_recycler_view }
 
-    val loadingView by lazy { fragment_home_forecast_weather_loading_view }
+    private val loadingView by lazy { fragment_home_forecast_weather_loading_view }
 
-    val errorView by lazy { fragment_home_forecast_weather_error_view }
+    private val errorView by lazy { fragment_home_forecast_weather_error_view }
 
+    private val currentCity: String? by lazy {
+        arguments?.getString(EXTRA_CURRENT_CITY, "Buenos Aires")
+    }
 
     private lateinit var weatherForecastAdapter: WeatherForecastAdapter
 
     companion object {
 
-        fun newInstance(): HomeFragment {
+        private const val EXTRA_CURRENT_CITY = "EXTRA_CURRENT_CITY"
 
-            return HomeFragment(R.layout.fragment_home)
+        fun newInstance(currentCity: String? = null): HomeFragment {
+
+            val fragment = HomeFragment(R.layout.fragment_home)
+
+            val args = Bundle()
+
+            args.putString(EXTRA_CURRENT_CITY, currentCity)
+
+            fragment.arguments = args
+
+            return fragment
         }
     }
 
@@ -97,6 +110,9 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogList
     private fun observeForecastWeather() {
 
         homeViewModel.forecastWeather.observe(viewLifecycleOwner, Observer {
+            recyclerView.visibility = View.GONE
+            errorView.visibility = View.GONE
+            loadingView.visibility = View.GONE
 
             when (it) {
 
@@ -106,7 +122,6 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogList
 
                     showForecastWeather(it.data)
 
-                    showErrorState()
                 }
 
                 is State.Loading -> showForecastLoading()
@@ -126,12 +141,18 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogList
 
     private fun showForecastWeather(forecastWeather: List<DailyForecastWeatherUIModel>?) {
 
+        recyclerView.scrollToPosition(0)
+
         hideForecastLoading()
 
         forecastWeather?.let {
 
             weatherForecastAdapter.submitList(it)
+
+            recyclerView.visibility = View.VISIBLE
+
         } ?: showErrorState()
+
     }
 
     private fun showForecastLoading() {
@@ -152,7 +173,7 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogList
 
     override fun onCitySelected(city: String) {
 
-        homeViewModel.setCity(city)
+        homeViewModel.setCurrentCity(city)
 
         homeViewModel.getCurrentWeather()
 
@@ -160,8 +181,13 @@ class HomeFragment(contentLayoutId: Int) : Fragment(contentLayoutId), DialogList
     }
 
     override fun onCurrentLocationSelected() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
 
+        try {
+            (activity as HomeActivity).requestLocationPermission()
+        } catch (e: Exception) {
+
+            toast(getString(R.string.error_message))
+        }
+    }
 
 }

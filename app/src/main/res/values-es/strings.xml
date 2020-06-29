@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="error_message">Algo salió mal. Por favor, intenta nuevamente.</string>
+    <string name="action_select_city">Selecciona la ciudad</string>
+    <string name="last_update">Actualizado:</string>
+</resources>

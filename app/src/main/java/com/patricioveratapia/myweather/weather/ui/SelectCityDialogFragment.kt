@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.Observer
 import com.patricioveratapia.myweather.R
+import com.patricioveratapia.myweather.weather.extensions.setRipple
 import com.patricioveratapia.myweather.weather.extensions.toast
 import com.patricioveratapia.myweather.weather.ui.adapter.CityAdapter
 import com.patricioveratapia.myweather.weather.ui.interfaces.DialogListener
@@ -28,7 +29,11 @@ class SelectCityDialogFragment : DialogFragment() {
 
     private val loadingView by lazy { dialog_fragment_select_city_loading_view }
 
-    val recyclerView by lazy { dialog_fragment_select_city_recycler_view }
+    private val recyclerView by lazy { dialog_fragment_select_city_recycler_view }
+
+    private val buttonCurrentLocation by lazy { dialog_fragment_select_city_current_location_button }
+
+    private val container by lazy { dialog_fragment_select_city_container }
 
 
     private val cityViewModel: CityViewModel by viewModel()
@@ -42,33 +47,55 @@ class SelectCityDialogFragment : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         dialog?.window?.let {
 
             it.setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
 
             it.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         }
 
+        setup()
+
         setupRecyclerView()
 
         setupCityListener()
+
+        setupCurrentLocation()
 
         observeCities()
 
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun setup() {
+
+        container.setOnClickListener {
+
+            dismiss()
+        }
+    }
+
+    private fun setupCurrentLocation() {
+
+        buttonCurrentLocation.setRipple()
+
+        buttonCurrentLocation.setOnClickListener {
+
+            if (parentFragment is DialogListener) {
+
+                (parentFragment as DialogListener).onCurrentLocationSelected()
+
+                dismiss()
+            }
+        }
 
     }
 
     private fun setupCityListener() {
 
-        cityAdapter?.onCityClickListener = {
+        cityAdapter.onCityClickListener = {
 
             if (parentFragment is DialogListener) {
 

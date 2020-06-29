@@ -1,4 +1,4 @@
-package com.patricioveratapia.myweather.weather.data
+package com.patricioveratapia.myweather.weather.ui.interfaces
 
 import com.patricioveratapia.myweather.weather.util.State
 import kotlinx.coroutines.flow.Flow
